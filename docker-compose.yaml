@@ -1,0 +1,52 @@
+version: '3'
+services:
+  #nginx
+  webserver:
+    image: nginx:latest
+    container_name: nginx_webserver_test
+    restart: always
+    ports:
+      - "8000:80"
+    volumes:
+      - ./app/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+  
+  #php
+  app:
+    container_name: application_app_test
+    working_dir: /var/www/html
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile #buildime aplikaciu z Dockerfile v docker adresari, co nie je dobre na produkciu.
+    volumes:
+      - /var/www/html/vendor #vytvori vendor slozku v rootu Dockeru  a zabezpeci ze ju app neprepise pri buildovani.
+      - ./app:/var/www/html #mountujeme app prepise vsetko co je v adresari /var/www/html v Dockeri kontajnera.
+
+  #mysql
+  db:
+    image: mysql:8.0
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: unless-stopped
+    environment:
+      MYSQL_HOST: db #db je meno kontajnera, ktory sa spusta pred tymto kontajnerom. Toto meno je vytvorene automaticky.
+      MYSQL_DATABASE: app_test
+      MYSQL_USER: app_test
+      MYSQL_PASSWORD: app_test
+  
+  #adminer
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080 #8081 je port na ktorom bude bezi adminer, 8080 je port na ktorom bezi adminer v Dockeri. Nie je mozne zmenit 8080:8081, alebo iny port vo vnutri Dockeru.
+    depends_on:
+      - db
+
+
+volumes:
+  mysql_data:
+  
