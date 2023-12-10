@@ -1,3 +1,3 @@
-/vendor
-/app/vendor
+/vendor/
+/app/vendor/
 LICENSE
