@@ -22,6 +22,11 @@ services:
     volumes:
       - /var/www/html/vendor #vytvori vendor slozku v rootu Dockeru  a zabezpeci ze ju app neprepise pri buildovani.
       - ./app:/var/www/html #mountujeme app prepise vsetko co je v adresari /var/www/html v Dockeri kontajnera.
+    environment:
+      MYSQL_HOST: db
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
 
   #mysql
   db:
